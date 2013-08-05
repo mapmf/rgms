@@ -21,6 +21,12 @@ Then(~'^the article "([^"]*)" is properly stored by the system$') { String title
     assert TestDataAndOperations.compatibleTo(article, title)
 }
 
+When(~'^I create the article "([^"]*)" with file name "([^"]*)" with the "([^"]*)" field blank$') { String title, String filename, String field ->
+    TestDataAndOperations.createArticle(title, filename)
+    def article = TestDataAndOperations.findArticleByTitle(title)
+    assert article.{field} == null
+}
+
 Then(~'^the article "([^"]*)" is not stored by the system because it is invalid$') { String title ->
     article = Periodico.findByTitle(title)
     assert article == null
@@ -88,7 +94,11 @@ Given(~'^I am at the articles page and the article "([^"]*)" is stored in the sy
  * @author Guilherme
  */
 When(~'^I delete the article "([^"]*)"$') { String title ->
+    def testarticle = Periodico.findByTitle(title)
+    assert testarticle != null
     TestDataAndOperations.removeArticle(title)
+    def testDeleteArticle = Periodico.findByTitle(title)
+    assert testDeleteArticle == null
 }
 
 /**
@@ -118,15 +128,14 @@ When(~'^I select to view "([^"]*)" in resulting list$') { String title ->
 /**
  * @author Guilherme
  */
-When(~'^I select to view "([^"]*)" in resulting list and I change the article title to "([^"]*)"$') { String oldtitle, newtitle ->
-    at ArticlesPage
-    page.selectViewArticle(oldtitle)
-    at ArticleShowPage
+
+
+When(~'^I change the article title to "([^"]*)"$') { String newtitle ->
     page.select('a', 'edit')
     at ArticleEditPage
-    page.edit(newtitle)
+    def path = new File(".").getCanonicalPath() + File.separator + "test" + File.separator + "files" + File.separator
+    page.edit(newtitle, path + "TCS-99.pdf")
 }
-
 /**
  * @author Guilherme
  */
@@ -162,7 +171,8 @@ Then(~'my resulting articles list contains "([^"]*)"$') { String title ->
 /**
  * @author Guilherme
  */
-Then(~'the article details are showed and I can select the option to remove$') {->
+
+When(~'I select the option to remove in show page$') {->
     at ArticleShowPage
     page.select('input', 'delete')
 }
@@ -170,10 +180,18 @@ Then(~'the article details are showed and I can select the option to remove$') {
 /**
  * @author Guilherme
  */
-Then(~'I can select the "([^"]*)" option$') { String option ->
+When(~'I select the "([^"]*)" option$') { String option ->
+
     at ArticleEditPage
     page.select(option)
+    //on ArticleEditPage
+
 }
+
+Then(~'^I am at Article show page$') { ->
+    at ArticleShowPage
+}
+
 
 //#if( $Twitter )
 Given(~'^There is a user "([^"]*)" with a twitter account$') { String userName ->

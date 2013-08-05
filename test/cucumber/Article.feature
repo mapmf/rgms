@@ -9,9 +9,9 @@ Feature: journal article
     When I create the article "A theory of software product line refinement" with file name "TCS.pdf"
     Then the article "A theory of software product line refinement" is properly stored by the system
 
-  Scenario: new invalid article
+  Scenario: new invalid article (number field blank)
     Given the system has no article entitled "Algebraic reasoning for object-oriented programming"
-    When I create the article "Algebraic reasoning for object-oriented programming" with file name "SCP.pdf"
+    When I create the article "Algebraic reasoning for object-oriented programming" with file name "SCP.pdf" with the "number" field blank
     Then the article "Algebraic reasoning for object-oriented programming" is not stored by the system because it is invalid
 
   Scenario: duplicate article
@@ -49,8 +49,8 @@ Feature: journal article
   Scenario: remove existing article web
     Given   I am at the articles page and the article "A theory of software product line refinement" is stored in the system with file name "TCS-77.pdf"
     When    I select to view "A theory of software product line refinement" in resulting list
-    Then    the article details are showed and I can select the option to remove
-    And     the article "A theory of software product line refinement" is properly removed by the system
+    And     I select the option to remove in show page
+    Then     the article "A theory of software product line refinement" is properly removed by the system
 
   Scenario: list existing article web
     Given    I am at the articles page and the article "A theory of software product line refinement" is stored in the system with file name "TCS-88.pdf"
@@ -58,8 +58,10 @@ Feature: journal article
 
   Scenario: edit existing article web
     Given    I am at the articles page and the article "A theory of software product line refinement" is stored in the system with file name "TCS-99.pdf"
-    When    I select to view "A theory of software product line refinement" in resulting list and I change the article title to "REVIEWED"
-    Then    I can select the "Alterar" option
+    When    I select to view "A theory of software product line refinement" in resulting list
+    And     I change the article title to "REVIEWED"
+    And     I select the "Alterar" option
+    Then    I am at Article show page
 
   Scenario: Add a new article twitting it
     Given I am logged as "admin" and at the Add Article Page
